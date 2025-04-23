@@ -24,14 +24,36 @@
         <div class="sidebar">
             <i class="fa fa-user-circle" aria-hidden="true"></i>
             {% if current_user.is_authenticated %}
-                <span class="user-name">{{ current_user.username }}</span>
+                <span class="user-name">{{ current_user.prenom }}</span>
             {% endif %}
-            <a href="{{ url_for('routes.dashboard_user') }}"><i class="fa fa-home"></i> Dashboard</a>
+            <a href="{{ url_for('routes.dashboard_user') }}"><i class="fa fa-home"></i> Tableau de bord</a>
             <a href="{{ url_for('routes.profile') }}"><i class="fa fa-user"></i> Profil</a>
-            <a href="{{ url_for('routes.carte') }}"><i class="fa fa-map"></i> Carte</a>
-            <a href="{{ url_for('routes.settings') }}"><i class="fa fa-cog"></i> Paramètres</a>
+            <a href="{{ url_for('routes.carte') }}"><i class="fa fa-map"></i> Cartographie</a>
+
+            
+
+            {% if current_user.role in ['Opérateur de terrain', 'Administrateur'] and request.path.startswith(url_for('routes.dashboard_operator')) or current_user.role == 'Opérateur de terrain' %}
+            <a href="{{ url_for('routes.datajaugeage') }}" class=""><i class="fa fa-database"></i> Données de jaugeage</a>
+            {% endif %}
+
+            
+            {% if current_user.role in ['Directeur de production', 'Administrateur'] and request.path.startswith(url_for('routes.dashboard_director')) or current_user.role == 'Directeur de production' %}
+            <a href="{{ url_for('routes.sysalerte') }}" class=""><i class="fa fa-bell"></i> Système d'alerte</a>
+            {% endif %}
+ 
+            {% if current_user.role in ['Ingénieur de production', 'Administrateur'] and request.path.startswith(url_for('routes.dashboard_engineer')) or current_user.role == 'Ingénieur de production' %}
+            <a href="{{ url_for('routes.rapport') }}" class=""><i class="fa fa-file-alt"></i> Rapport</a>
+            {% endif %}
+            
+
+            
+            <!-- This section contains an `if` statement to check the user's role and a switch button for admin access. -->
+            {% if current_user.role == 'Administrateur' %}
+            <a href="{{ url_for('admin.index') }}" class="switch-admin-btn"><i class="fa fa-user-shield"></i> Retour à l'admin</a>
+            {% endif %}
+
         </div>
-        <div class="content">
+        <div class="content-user">
             {% block content %}{% endblock %}
         </div>
     </div>

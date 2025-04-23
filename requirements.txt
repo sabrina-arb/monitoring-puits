@@ -9,3 +9,4 @@ SQLAlchemy
 folium  
 Pillow
 geoalchemy2
+shapely 

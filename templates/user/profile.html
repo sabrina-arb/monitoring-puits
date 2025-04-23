@@ -7,13 +7,13 @@
     <div class="profile-card">
         <h2 class="profile-title">Profil Utilisateur</h2>
         <div class="profile-image-wrapper">
-            <img src="/static/uploads/{{ current_user.profile.image_url }}" alt="Photo de profil" class="profile-image">
+            <img src="/static/uploads/{{ current_user.image_url }}" alt="Photo de profil" class="profile-image">
 
         </div>
         <ul class="profile-info">
-            <li><strong>Nom :</strong> {{ current_user.profile.nom }}</li>
-            <li><strong>Prénom :</strong> {{ current_user.profile.prenom }}</li>
-            <li><strong>Adresse :</strong> {{ current_user.profile.adresse }}</li>
+            <li><strong>Nom :</strong> {{ current_user.nom }}</li>
+            <li><strong>Prénom :</strong> {{ current_user.prenom }}</li>
+            <li><strong>Adresse :</strong> {{ current_user.adresse }}</li>
         </ul>
     </div>
 </div>
