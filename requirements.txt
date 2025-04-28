@@ -1,0 +1,12 @@
+flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-Admin
+psycopg2
+psycopg2-binary
+Werkzeug
+SQLAlchemy
+folium  
+Pillow
+geoalchemy2
+shapely 
