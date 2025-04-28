@@ -10,3 +10,4 @@ folium
 Pillow
 geoalchemy2
 shapely 
+requests

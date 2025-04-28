@@ -250,8 +250,8 @@ class SeparateurAdmin(ModelView):
         'type': 'Type de séparateur',
         'capacite': 'Capacité (m³)'
     }
-    column_searchable_list = [ 'nom']
     column_filters = ['type']
+    column_searchable_list=['nom', 'type']
     
     form_columns = ['nom', 'type', 'capacite']
     
