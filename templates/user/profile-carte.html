@@ -1,0 +1,31 @@
+{% extends 'user/base_user.html' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+   <!-- components/_profile_card.html -->
+<div class="profile-card">
+    <h2 class="profile-title">Mon Profil</h2>
+
+    <div class="profile-image-wrapper">
+        <img src="{{ url_for('static', filename='uploads/' ~ current_user.image_url) }}" 
+             alt="Photo de profil" class="profile-image">
+    </div>
+
+    <ul class="profile-info">
+        <li><strong>Nom :</strong> {{ current_user.nom }}</li>
+        <li><strong>Prénom :</strong> {{ current_user.prenom }}</li>
+        <li><strong>Email :</strong> {{ current_user.email }}</li>
+        <li><strong>Adresse :</strong> {{ current_user.adresse or 'Non renseignée' }}</li>
+        <li><strong>Poste :</strong> {{ current_user.role or 'Non défini' }}</li>
+        <li><strong>Dernière connexion :</strong> 
+            {{ current_user.last_login.strftime('%d-%m-%Y %H:%M:%S') if current_user.last_login else 'Jamais connecté' }}
+        </li>
+    </ul>
+</div>
+
+</div>
+{% endblock %}
+
+

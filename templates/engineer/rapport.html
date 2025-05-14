@@ -1,0 +1,245 @@
+{% extends 'user/base_user.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport de Puits</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script>
+    const DOWNLOAD_PDF_URL = "{{ url_for('routes.download_pdf') }}";
+  </script>
+  <script src="{{ url_for('static', filename='js.js') }}"></script>
+</head>
+<body>
+    <form method="POST" class="rapport-form">
+        <label>Nom du rapport
+            <input type="text" name="nom_rapport" placeholder="Ex: Rapport Mensuel Janvier 2025" required>
+        </label>
+        <label>Nom du puits
+            <input type="text" name="nom_puits" required>
+        </label>
+        <label>ID du puits
+            <input type="text" 
+                   name="id_puits" 
+                   pattern="[A-Z0-9]{4,20}" 
+                   title="Format: 4 à 20 caractères alphanumériques (ex: PUITS001)"
+                   required>
+        </label>
+        
+        <!-- Coordonnées géographiques -->
+        <label>Latitude
+            <input type="number" 
+                   name="latitude" 
+                   step="0.000001"
+                   min="-90" 
+                   max="90"
+                   required>
+        </label>
+        
+        <label>Longitude
+            <input type="number" 
+                   name="longitude" 
+                   step="0.000001"
+                   min="-180" 
+                   max="180"
+                   required>
+        </label>
+        
+        <!-- Région - Texte avec suggestions -->
+        <label>Région
+            <input type="text" 
+                   name="region" 
+                   list="regions-list"
+                   required>
+                    </label>
+        
+        <!-- Date - Format localisé -->
+        <label>Date de mise en service
+            <input type="date" 
+                   name="date_mise_en_service" 
+                   max="{{ datetime.now().strftime('%Y-%m-%d') }}"
+                   required>
+        </label>
+        
+        
+            <label>Pression (bars)
+                <input type="number" 
+                       name="pression" 
+                       step="0.1"
+                       min="0" 
+                       max="1000"
+                       required>
+            </label>
+        
+            <label>Température (°C)
+                <input type="number" 
+                       name="temperature" 
+                       step="0.1"
+                       min="-50" 
+                       max="150"
+                      
+                       required>
+            </label>
+        <!-- Nombre d'alertes - Entier positif -->
+        <label>Nombre d'alertes
+            <input type="number" 
+                   name="alertes" 
+                   min="0" 
+                   max="100"
+                   required>
+        </label>
+        <select name="etat_puits" required>
+            <option value="" selected disabled>-- Sélectionnez un état --</option>
+            <option value="actif">Actif</option>
+            <option value="inactif">Inactif</option>
+            <option value="maintenance">Maintenance</option>
+        </select>
+        <!-- Opérateur - Texte avec format nom prénom -->
+        <label>Nom de l'opérateur
+            <input type="text" 
+                   name="operateur" 
+                   pattern="[A-Za-zÀ-ÿ\s\-]{3,50}" 
+                   title="Format: Nom et prénom (3-50 caractères)"
+                   required>
+        </label>
+    <div class="textarea-container">
+        <!-- Nouveau champ Description -->
+        <label>Compte rendu
+            <textarea name="description" rows="4" placeholder="Écrivez ici votre compte rendu..." required >{{ request.form.get('description', '') }}</textarea>
+        </label>
+    </div>
+
+        <button type="submit">Enregistrer le rapport</button>
+    </form>
+
+    {% if submitted %}
+    <div id="overlay"></div>
+
+    <div id="rapportModal">
+        <div class="rapport-modal-content">
+            <span class="close-rapport" onclick="closeRapportModal()">&times;</span>
+
+            <h2 class="rapport-title">📋 Rapport Technique du Puits</h2>
+
+            <div class="rapport-details">
+                <p><strong>📅 Date du rapport :</strong> {{ data.date_rapport }}</p>
+
+                <h3>🛢️ Informations de base</h3>
+                <p><strong>Nom du puits :</strong> {{ data.nom_puits }}</p>
+                <p><strong>ID du puits :</strong> {{ data.id_puits }}</p>
+                <p><strong>Site :</strong> {{ data.site }}</p>
+                <p><strong>Région :</strong> {{ data.region }}</p>
+                <p><strong>Localisation GPS :</strong> Latitude {{ data.latitude }}, Longitude {{ data.longitude }}</p>
+                <p><strong>Date de mise en service :</strong> {{ data.date_mise_en_service }}</p>
+
+                <h3>📈 Paramètres de surveillance</h3>
+                <p><strong>Pression :</strong> {{ data.pression }} bar</p>
+                <p><strong>Température :</strong> {{ data.temperature }} °C</p>
+                <p><strong>État du puits :</strong> {{ data.etat_puits }}</p>
+                <p><strong>Nombre d'alertes :</strong> {{ data.alertes }}</p>
+
+                <h3>👤 Opérateur</h3>
+                <p><strong>Nom :</strong> {{ data.operateur }}</p>
+
+                <h3>📝 Compte-rendu technique</h3>
+                <div class="description-static">
+                    {{ request.form.get('description', 'Aucune description fournie.') | replace('\n', '<br>') | safe }}
+                </div>
+            </div>
+            
+
+            <div class="rapport-actions">
+                <a href="{{ url_for('routes.download_pdf') }}" class="download-link">📄 Télécharger le rapport en PDF</a>
+            
+            </div>
+            {% include 'engineer/partials/email_form.html' %}
+
+           
+        </div>
+    </div>  
+    
+    {% endif %}
+</body>
+</html>
+<style>
+    .description-static {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 4px;
+    white-space: pre-line;
+    word-wrap: break-word;
+    font-size: 14px;
+    color: #333;
+    margin-top: 4px;
+    border-left: 4px solid #1a5276;
+}
+
+.rapport-title {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #1a5276;
+    color: #1a5276;
+}
+
+.rapport-details p {
+    margin: 5px 0;
+}
+
+.rapport-details h3 {
+    margin-top: 20px;
+    color: #1a5276;
+    font-size: 16px;
+}
+
+.rapport-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}.close-rapport {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-rapport:hover {
+    color: #d9534f; /* Couleur rouge lors du survol */
+}
+/*email*/
+/* Éditeur de texte enrichi */
+.ql-toolbar {
+  border-radius: 5px 5px 0 0 !important;
+}
+.ql-container {
+  border-radius: 0 0 5px 5px !important;
+  height: 150px !important;
+}
+
+/* Sélecteur de destinataires */
+.select2-container--default .select2-selection--multiple {
+  min-height: 38px;
+  border: 1px solid #ced4da;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+}
+
+/* Prévisualisation fichier */
+#fileName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+
+</style>
+{% endblock %}

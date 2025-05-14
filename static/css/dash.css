@@ -1,0 +1,171 @@
+/* Styles de base */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #F5F7FA;
+    color: #2A2A3D;
+    margin: 0;
+    padding: 20px;
+    padding-left: 0;
+    padding-top: 15px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    margin-bottom: 0px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: #2A2A3D;
+}
+
+.dashboard-time {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Orbitron', sans-serif;
+    color: #6B7280;
+}
+
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.status-active {
+    background-color: #00FFA3;
+}
+
+/* Layout principal */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    padding-top: 3px;
+    justify-content: center;
+}
+
+.graph-container {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    height: 50vh;
+    min-height: 400px;
+    padding-top:5px;
+    margin-top:0;
+}
+
+.bottom-row {
+    display: flex;
+    gap: 20px;
+    height: 35vh;
+    min-height: 300px;
+}
+
+/* Conteneurs communs */
+.bars-container,
+.gauge-container,
+.calendar-container {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    padding-top: 10px;
+    
+}
+
+/* Styles spécifiques */
+/* À ajouter à votre dash.css */
+.bars-container {
+    min-width: 550px;  /* Largeur minimale pour contenir 5 étiquettes */
+    overflow-x: auto;  /* Scroll horizontal si nécessaire */
+    padding-bottom: 50px;
+}
+
+#pressureBars {
+    width: 100% !important;  /* Force l'utilisation de tout l'espace */
+}
+
+.gauge-container {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 25px;
+}
+
+.chart-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2A2A3D;
+    margin-bottom: 5px;
+}
+
+
+.calendar-container {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 60px;
+}
+
+.puit-selector {
+    border-radius: 5px;
+    display: inline-block;
+}
+
+#puit-choix {
+    padding: 8px;
+    margin-left: 10px;
+    min-width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
+.dropdown-results {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    width: 100%;
+}
+
+.dropdown-results.show {
+    display: block;
+}
+
+.dropdown-results div {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.dropdown-results div:hover {
+    background-color: #f1f1f1;
+}

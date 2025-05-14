@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport Technique de Puits</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 2cm;
+            font-size: 12pt;
+            color: #333;
+            line-height: 1.6;
+        }
+        h2 {
+            color: #1a5276;
+            border-bottom: 2px solid #1a5276;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-size: 18pt;
+        }
+        .section {
+            margin-bottom: 8px;
+            page-break-inside: avoid;
+        }
+        .section strong {
+            display: inline-block;
+            width: 200px;
+            color: #1a5276;
+            font-weight: 600;
+            vertical-align: top;
+        }
+        .interactive-description {
+            margin-top: 25px;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+        .interactive-description h3 {
+            color: #1a5276;
+            background-color: #f0f7ff;
+            padding: 12px 15px;
+            margin: 0 0 10px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .interactive-description h3:hover {
+            background-color: #e0efff;
+        }
+        .interactive-description h3::after {
+            content: "↓";
+            font-size: 14pt;
+            transition: transform 0.3s ease;
+        }
+        .interactive-description .content {
+            padding: 0 15px;
+            border-left: 3px solid #1a5276;
+            margin-left: 10px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        .interactive-description.active .content {
+            max-height: 1000px;
+            padding: 10px 15px;
+        }
+        .interactive-description.active h3::after {
+            transform: rotate(180deg);
+        }
+        .description-text {
+            white-space: pre-line;
+            word-wrap: break-word;
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12pt;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+    </style>
+</head>
+<body>
+    <h2>Rapport Technique de Surveillance de Puits</h2>
+    
+    <div class="section"><strong>Date du rapport :</strong> {{ data.date_rapport }}</div>
+    <div class="section"><strong>Nom du puits :</strong> {{ data.nom_puits }}</div>
+    <div class="section"><strong>ID du puits :</strong> {{ data.id_puits }}</div>
+    <div class="section"><strong>Localisation GPS :</strong> Latitude {{ data.latitude }}, Longitude {{ data.longitude }}</div>
+    <div class="section"><strong>Zone d'exploitation :</strong> {{ data.site }}</div>
+    <div class="section"><strong>Région :</strong> {{ data.region }}</div>
+    <div class="section"><strong>Date de mise en service :</strong> {{ data.date_mise_en_service }}</div>
+    <div class="section"><strong>Pression (bar) :</strong> {{ data.pression }}</div>
+    <div class="section"><strong>Température (°C) :</strong> {{ data.temperature }}</div>
+    <div class="section"><strong>État du puits :</strong> {{ data.etat_puits }}</div>
+    <div class="section"><strong>Nombre d'alertes :</strong> {{ data.alertes }}</div>
+    <div class="section"><strong>Opérateur responsable :</strong> {{ data.operateur }}</div>
+    
+    <!-- Section description interactive -->
+    <div class="interactive-description active">
+        <h3>Compte-rendu Technique Détaillé</h3>
+        <div class="content">
+            <div class="description-text">
+                {{ data.comptrendu or "Aucun compte-rendu détaillé n'a été fourni pour ce puits." }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Script pour l'interactivité (fonctionnel dans les navigateurs)
+        document.querySelectorAll('.interactive-description h3').forEach(header => {
+            header.addEventListener('click', () => {
+                header.parentElement.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

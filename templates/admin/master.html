@@ -1,0 +1,92 @@
+{% extends 'admin/base.html' %}
+
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.2.96/css/materialdesignicons.min.css">  
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Sonatrach">
+            <span>Sonatrach Well Monitoring System</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('routes.index') }}">Accueil</a></li>
+                <li><a href="{{ url_for('routes.logout') }}">Déconnexion</a></li>
+               
+            </ul>
+        </nav>
+    </header>
+{% endblock %}
+ 
+
+
+{% block main_menu %}
+<div class="container-fluid" style="padding-left: 0; padding-right: 0;">
+    <!-- Barre latérale -->
+    <div class="sidebar">
+        <i class="fa fa-user-circle" aria-hidden="true"></i>
+        {% if current_user.is_authenticated %}
+            <span class="user-name">{{ current_user.prenom }}</span>
+        {% endif %}
+        <a href="{{ url_for('admin.index') }}"><i class="fa fa-home"></i> Tableau de bord</a>
+        <a href="{{ url_for('test.index_view') }}"><i class="fa fa-users"></i> Utilisateurs</a>
+        <a href="{{ url_for('puit.index_view') }}"><i class="fa fa-oil-well"></i> Puits</a>
+        <a href="{{ url_for('region.index_view') }}"><i class="fa fa-map-marker-alt"></i> Regions</a>
+
+        <div class="dropdown">
+            <a href="#">
+                <i class="fa fa-tools"></i>
+                Equipments
+                <i class="fa fa-chevron-down"></i>
+            </a>
+            <div class="dropdown-content">
+                <a href="{{ url_for('duse.index_view') }}">
+                    <i class="mdi mdi-pipe-valve mdi-24px"></i>
+                    Duse
+                </a>
+                <a href="{{ url_for('separateur.index_view') }}">
+                    <i class="mdi mdi-storage-tank mdi-24px"></i>
+                    Separateur
+                </a>
+            </div>
+        </div> <!-- Fermeture du premier dropdown -->
+
+        <div class="dropdown">
+            <a href="#">
+                <i class="mdi mdi-account-switch"></i>
+                Basculer entre les vues
+                <i class="fa fa-chevron-down"></i>
+            </a>
+            <div class="dropdown-content">
+                <a href="{{ url_for('routes.switch_to_engineer_view') }}">
+                    <i class="fas fa-user-graduate"></i> Ingénieur de production
+                </a>
+                <a href="{{ url_for('routes.switch_to_director_view') }}">
+                    <i class="fas fa-user-tie"></i> Directeur de production
+                </a>
+                <a href="{{ url_for('routes.switch_to_operator_view') }}">
+                    <i class="mdi mdi-account-hard-hat mdi-24px"></i> Opérateur de terrain
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <!-- Contenu principal -->
+    {% block content %}
+    <div class="content">
+        
+    </div>{% endblock %}
+</div>
+
+{% endblock %}
