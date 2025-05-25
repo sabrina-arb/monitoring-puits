@@ -13,50 +13,66 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-
 <div class="dashboard-header">
     <h1 class="dashboard-title">SURVEILLANCE DES PARAMÈTRES DE PRODUCTION</h1>
     <div class="dashboard-time">
         <span id="current-time"></span>
     </div>
-    <div class="puit-selector">
-    <label for="puit-search">Rechercher un puits :</label>
-    <input type="text" id="puit-search" placeholder="  Tapez le nom . . ." autocomplete="off">
-    <div id="puit-results" class="dropdown-results"></div>
-</div>
-    
+    <div class="puit-selector" style="position: relative;">
+        <label for="puit-search">Rechercher un puits :</label>
+        <input type="text" id="puit-search" placeholder="  Tapez le nom . . ." autocomplete="off">
+        <div id="puit-results" class="dropdown-results"></div>
+        <button id="alert-icon-button" class="alert-icon-button">
+            &#128276;
+            <span id="alert-count-badge" class="alert-count-badge">0</span>
+        </button>
+        
+        <div id="alert-list-container" class="alert-list-container">
+            <h4>Historique des Alertes</h4>
+            <ul id="alert-list-ul"></ul>
+        </div>
+    </div>
 </div>
 
 <div class="dashboard-container">
-    <!-- Partie 1: Graphique principal en haut -->
-    <div class="graph-container">
+    <div class="top-section">
         <div class="chart-title">SURVEILLANCE MULTI-PARAMÈTRES</div>
-        <canvas id="mainChart"></canvas>
+        <div class="chart-wrapper">
+            <canvas id="mainChart"></canvas>
+        </div>
     </div>
     
-    <!-- Nouvelle disposition pour les 3 éléments du bas -->
-    <div class="bottom-row">
-        <!-- Barres à gauche -->
+    <div class="middle-section">
         <div class="bars-container">
             <div class="chart-title">HISTORIQUE DES PRESSIONS</div>
-            <canvas id="pressureBars"></canvas>
+            <div class="chart-wrapper">
+                <canvas id="pressureBars"></canvas>
+            </div>
         </div>
         
-        <!-- Jauge au centre -->
         <div class="gauge-container">
             <div class="chart-title">INDICATEURS CLÉS</div>
-            <canvas id="comboGauge"></canvas>
+            <div class="chart-wrapper">
+                <canvas id="comboGauge"></canvas>
+            </div>
         </div>
         
-        <!-- Calendrier à droite -->
         <div class="calendar-container">
             <div class="chart-title">CALENDRIER DE PRODUCTION</div>
-            <div id="calendar"></div>
+            <div class="chart-wrapper">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bottom-section">
+        <div class="chart-title">PRODUCTION JOURNALIÈRE (m³/j)</div>
+        <div class="chart-wrapper production-container">
+            <canvas id="productionChart"></canvas>
         </div>
     </div>
 </div>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 {% endblock %}

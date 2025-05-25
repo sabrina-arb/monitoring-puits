@@ -45,19 +45,19 @@
             <a href="{{ url_for('routes.carte') }}"><i class="fa fa-map"></i> Cartographie</a>
 
             
+<!-- Dans votre base_user.html, remplacez les conditions des menus spécifiques par : -->
 
-            {% if current_user.role in ['Opérateur de terrain', 'Administrateur'] and request.path.startswith(url_for('routes.dashboard_operator')) or current_user.role == 'Opérateur de terrain' %}
-            <a href="{{ url_for('routes.datajaugeage') }}" class=""><i class="fa fa-database"></i> Données de jaugeage</a>
-            {% endif %}
+{% if current_user.role == 'Administrateur' and session.get('view_as') == 'engineer' or current_user.role == 'Ingénieur de production' %}
+<a href="{{ url_for('routes.rapport') }}"><i class="fa fa-file-alt"></i> Rapport</a>
+{% endif %}
 
-            
-            {% if current_user.role in ['Directeur de production', 'Administrateur'] and request.path.startswith(url_for('routes.dashboard_director')) or current_user.role == 'Directeur de production' %}
-            <a href="{{ url_for('routes.sysalerte') }}" class=""><i class="fa fa-bell"></i> Système d'alerte</a>
-            {% endif %}
- 
-            {% if current_user.role in ['Ingénieur de production', 'Administrateur'] and request.path.startswith(url_for('routes.dashboard_engineer')) or current_user.role == 'Ingénieur de production' %}
-            <a href="{{ url_for('routes.rapport') }}" class=""><i class="fa fa-file-alt"></i> Rapport</a>
-            {% endif %}
+{% if current_user.role == 'Administrateur' and session.get('view_as') == 'operator' or current_user.role == 'Opérateur de terrain' %}
+<a href="{{ url_for('routes.datajaugeage') }}"><i class="fa fa-database"></i> Données de jaugeage</a>
+{% endif %}
+
+{% if current_user.role == 'Administrateur' and session.get('view_as') == 'director' or current_user.role == 'Directeur de production' %}
+<a href="{{ url_for('routes.sysalerte') }}"><i class="fa fa-bell"></i> Système d'alerte</a>
+{% endif %}
             
 
             

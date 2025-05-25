@@ -25,7 +25,7 @@ from email.utils import formataddr
 from folium.plugins import MarkerCluster
 from config import mail  # adapte selon ton projet
 from flask import jsonify
-from modbus.data_service import data_modbus
+from modbus.data_service import data_modbus 
 
 
 
@@ -39,7 +39,41 @@ routes = Blueprint('routes', __name__, url_prefix='/')
 def api_modbus_data():
     return jsonify(data_modbus)
 
+@routes.route('/api/puits', methods=['GET'])
+def api_puits():
+    try:
+        puits_list = Puit.query.all()
+        result = [{'id': puit.id, 'nom': puit.nom} for puit in puits_list]
+        return jsonify(result)
+    except Exception as e:
+        current_app.logger.error(f"Erreur lors de la récupération des puits: {e}")
+        return jsonify({"error": "Erreur serveur lors de la récupération des données des puits"}), 500
 
+@routes.route('/api/puit_details/<int:puit_id>', methods=['GET'])
+def api_puit_details(puit_id):
+    try:
+        puit = Puit.query.get(puit_id)
+        if puit:
+            details = {
+                'id': puit.id,
+                'nom': puit.nom,
+                'latitude': puit.latitude,
+                'longitude': puit.longitude,
+                'status': puit.status,
+                'p_min': puit.p_min,
+                'p_max': puit.p_max,
+                'd_min': puit.d_min,
+                'd_max': puit.d_max,
+                't_min': puit.t_min,
+                't_max': puit.t_max,
+                'region_id': puit.region_id
+            }
+            return jsonify(details)
+        else:
+            return jsonify({"error": "Puit non trouvé"}), 404
+    except Exception as e:
+        current_app.logger.error(f"Erreur lors de la récupération des détails du puit {puit_id}: {e}")
+        return jsonify({"error": "Erreur serveur lors de la récupération des détails du puit"}), 500
 
 @routes.route('/')
 def index():
@@ -327,10 +361,6 @@ def generate_pdf(data):
 def profile():
     return render_template('user/profile-carte.html')
 
-@routes.route('/settings')
-@login_required
-def settings():
-    return render_template('user/settings.html')
 
 
 
@@ -363,28 +393,40 @@ def dashboard_operator():
 
 @routes.route('/switch_to_engineer_view')
 @login_required
-def switch_to_engineer_view():  # Nom unique
+def switch_to_engineer_view():
     if current_user.role != 'Administrateur':
         flash("Accès réservé aux administrateurs", "danger")
         return redirect(url_for('routes.login'))
+    session['view_as'] = 'engineer'  # Stocke le mode de vue
     return redirect(url_for('routes.dashboard_engineer'))
 
 @routes.route('/switch_to_director_view')
 @login_required
-def switch_to_director_view():  # Nom unique
+def switch_to_director_view():
     if current_user.role != 'Administrateur':
         flash("Accès réservé aux administrateurs", "danger")
         return redirect(url_for('routes.login'))
+    session['view_as'] = 'director'  # Stocke le mode de vue
     return redirect(url_for('routes.dashboard_director'))
 
 @routes.route('/switch_to_operator_view')
 @login_required
-def switch_to_operator_view():  # Nom unique
+def switch_to_operator_view():
     if current_user.role != 'Administrateur':
         flash("Accès réservé aux administrateurs", "danger")
         return redirect(url_for('routes.login'))
+    session['view_as'] = 'operator'  # Stocke le mode de vue
     return redirect(url_for('routes.dashboard_operator'))
 
+# Ajoutez une route pour revenir à la vue admin
+@routes.route('/switch_to_admin_view')
+@login_required
+def switch_to_admin_view():
+    if current_user.role != 'Administrateur':
+        flash("Accès réservé aux administrateurs", "danger")
+        return redirect(url_for('routes.login'))
+    session.pop('view_as', None)  # Retire le mode de vue
+    return redirect(url_for('admin.index'))
 
 @routes.route('/jaugeage')
 @login_required

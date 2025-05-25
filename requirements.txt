@@ -16,3 +16,4 @@ flask_mail
 fpdf
 pdfkit
 weasyprint
+pandas
