@@ -346,3 +346,145 @@ body {
     display: flex;
     gap: 10px;
 }
+
+/* Ajoutez ces règles à la fin du fichier CSS existant */
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+    .container {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .navbar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+    }
+
+    .navbar-search {
+        max-width: 100%;
+        margin: 0.5rem 0;
+    }
+
+    .navbar-buttons {
+        justify-content: flex-end;
+        margin-top: 0.5rem;
+    }
+
+    .telegougage-header,
+    .telegougage-item {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .telegougage-header div:nth-child(3),
+    .telegougage-header div:nth-child(4),
+    .telegougage-item div:nth-child(3),
+    .telegougage-item div:nth-child(4) {
+        grid-column: 2;
+    }
+
+    .action-buttons {
+        grid-column: 1 / -1;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+
+    .modal-content {
+        width: 90%;
+        margin: 10% auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        flex-wrap: wrap;
+    }
+
+    .modal-footer button {
+        flex: 1 1 45%;
+        margin-bottom: 0.5rem;
+    }
+
+    .telegougage-header,
+    .telegougage-item {
+        grid-template-columns: 1fr;
+    }
+
+    .telegougage-header div,
+    .telegougage-item div {
+        grid-column: 1;
+    }
+
+    .action-buttons {
+        justify-content: space-around;
+    }
+    .saisie-button {
+        padding-right: 10px;
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .navbar-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal-content {
+        margin: 15% auto;
+        width: 98%;
+        padding: 1rem;
+    }
+
+    .modal-footer button {
+        flex: 1 1 100%;
+    }
+
+    .btn {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Améliorations pour les petits écrans */
+@media (max-width: 400px) {
+    :root {
+        font-size: 14px;
+    }
+
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+    }
+
+    .form-group input, 
+    .form-group select {
+        padding: 0.5rem;
+    }
+   
+}

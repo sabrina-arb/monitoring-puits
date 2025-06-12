@@ -230,7 +230,7 @@ def carte():
     search_query = request.form.get('search', '')
 
     # Initialisation de la carte
-    m = folium.Map(location=[28.0339, 1.6596], zoom_start=6, control_scale=True)
+    m = folium.Map(location=[28.0339, 1.6596], zoom_start=5, control_scale=True)
     # Couche des régions
     regions_layer = folium.FeatureGroup(name="Régions", show=True)
     regions = Region.query.all()

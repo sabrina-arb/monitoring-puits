@@ -191,9 +191,13 @@
 }
 
 /* ========== Calendrier ========== */
-#calendar {
-    min-height: 300px;
+/*#calendar {
+
+    min-height:300px;
 }
+
+
+
 
 /* ========== Alertes ========== */
 .alert-icon-button {
@@ -361,11 +365,19 @@
         height: 250px;
     }
 
-    #calendar {
+   calendar {
         min-height: 250px;
-    }
+   }
+   
+   
 }
 
 .container-fluid {
     padding-right: 0%;
+}
+.flatpickr-calendar.inline {
+    max-width: 100%;
+    box-sizing: border-box;
+  /* height: 100%;*/
+    max-height: 100%;
 }

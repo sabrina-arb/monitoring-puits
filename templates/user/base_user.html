@@ -45,7 +45,7 @@
             <a href="{{ url_for('routes.carte') }}"><i class="fa fa-map"></i> Cartographie</a>
 
             
-<!-- Dans votre base_user.html, remplacez les conditions des menus spécifiques par : -->
+
 
 {% if current_user.role == 'Administrateur' and session.get('view_as') == 'engineer' or current_user.role == 'Ingénieur de production' %}
 <a href="{{ url_for('routes.rapport') }}"><i class="fa fa-file-alt"></i> Rapport</a>

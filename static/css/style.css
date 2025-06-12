@@ -56,13 +56,28 @@ header .logo img {
     margin-right: 10px;
 }
 
+
+
 header .logo span {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bold;
     letter-spacing: 0.5px;
     text-transform: uppercase;
     opacity: 0.9;
+    /* Supprimer white-space, overflow et text-overflow */
+    white-space: normal; /* Permet le retour à la ligne */
+    overflow: visible; /* Permet au texte de dépasser si nécessaire */
+    text-overflow: clip; /* Pas d'ellipsis */
 }
+
+/* Ajouter des media queries pour ajuster la taille du texte sur petits écrans */
+
+@media (max-width: 750px) {
+    header .logo span {
+        font-size: 0.78rem;
+    }
+}
+
 
 nav ul {
     list-style: none;
@@ -93,6 +108,7 @@ nav ul li a:hover {
 /* ========================= */
 /* SECTION HERO */
 /* ========================= */
+
 .hero {
     background: url('../images/accueil.jpg') no-repeat center center/cover;
     height: calc(100vh - 70px);
@@ -465,10 +481,22 @@ footer {
 /* ========================= */
 /* STYLES POUR LA CARTE */
 /* ========================= */
-.map-container {
+#map-container {
+    height: calc(100vh - 70px); /* 70px = header fixe */
     width: 100%;
     position: relative;
-    margin-right: 0px;
+    background-color: #f4f4f4;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+div#map div div {
+    position: static !important;
+    zoom: 0.80; /* Réduit la taille de la carte */
+
 }
 
 .search-form {
@@ -519,6 +547,8 @@ footer {
     background-color: #ff6600;
 }
 
+
+/*/* ========================= */
 .legend {
     display: flex;
     justify-content: center;
