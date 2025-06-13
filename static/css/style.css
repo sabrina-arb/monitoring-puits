@@ -20,12 +20,7 @@ body {
     min-height: 100vh;
 }
 
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
+.container .navbar{display: none !important;}
 
 /* ========================= */
 /* EN-TÊTE (HEADER) */
@@ -663,8 +658,14 @@ div#map div div {
 /* ========================= */
 /* CONTENU PRINCIPAL */
 /* ========================= */
+
 .content {
-color: #000;
+    flex: 1;
+    padding: 20px;
+    margin-left: 268px; /* Largeur de la sidebar */
+    margin-top: 60px; /* Hauteur de l'en-tête */
+    background-color: #f4f4f4;
+    min-height: calc(100vh - 60px); /* Ajuste la hauteur pour compenser l'en-tête */
 }
 
 .content-user {
@@ -836,9 +837,9 @@ color: #000;
 /* ========================= */
 .admin-dashboard {
     width:100%;
-    margin-left:100px;
+    margin-left:0px;
     min-height: calc(100vh - 70px);
-    padding: 2rem;
+
     box-sizing:content-box;
     position: relative;
     overflow: auto;
