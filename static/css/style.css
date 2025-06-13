@@ -547,6 +547,11 @@ div#map div div {
     background-color: #ff6600;
 }
 
+.leaflet-container {
+    font-size: 1.5rem !important;
+}
+
+
 
 /*/* ========================= */
 .legend {
@@ -666,8 +671,12 @@ color: #000;
     padding-top: 60px;
     margin-left: 256px;
     
+    
 }
 
+.container-fluid{
+    padding-right: 0 !important;
+}
 /* ========================= */
 /* PAGE ADMINISTRATION */
 /* ========================= */
@@ -1639,4 +1648,7 @@ color: #000;
         grid-template-columns: 1fr 1fr;
     }
 }
+
+
+
 

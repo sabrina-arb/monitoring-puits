@@ -336,6 +336,17 @@ def carte():
 
     # Contrôle des couches
     folium.LayerControl(position='topright', collapsed=True).add_to(m)
+    
+    
+    
+    # Appliquer une taille de police personnalisée aux couches de la carte (LayerControl)
+    m.get_root().html.add_child(folium.Element("""
+    <style>
+    .leaflet-control-layers label {
+        font-size: 16px !important;
+    }
+    </style>
+    """))
 
     return render_template(
         'user/carte.html',
