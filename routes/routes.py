@@ -27,7 +27,9 @@ from config import mail  # adapte selon ton projet
 from flask import jsonify
 from modbus.data_service import data_modbus
 from typing import Dict, Tuple
-
+from datetime import datetime
+from flask import jsonify, request
+from database.models import Telejaugeage  # Importez votre modèle Telejaugeage
 
 
 
@@ -36,6 +38,44 @@ routes = Blueprint('routes', __name__, url_prefix='/')
 
 # Puits actuellement sélectionné pour la simulation
 current_selected_puit = {"id": None}
+
+@routes.route('/get_telegougage_data', methods=['GET'])
+def get_telegougage_data():
+    try:
+        # Option : Filtrer par puit_id si fourni dans les query params
+        puit_id = request.args.get('puit_id')
+        
+        query = Telejaugeage.query
+        
+        if puit_id:
+            query = query.filter_by(puit_id=puit_id)
+            
+        # Trier par date décroissante et limiter à 100 entrées
+        jaugeages = query.order_by(Telejaugeage.date_debut.desc()).limit(100).all()
+        
+        # Formatage des données
+        jaugeage_data = [{
+            'id': j.id,
+            'nom_puits': j.nom_puits,
+            'date_debut': j.date_debut.isoformat() if j.date_debut else None,
+            'date_fin': j.date_fin.isoformat() if j.date_fin else None,
+            'pression_pip': j.pression_pip,
+            'pression_manifold': j.pression_manifold,
+            'temperature_pipe': j.temperature_pipe,
+            'temperature_tete': j.temperature_tete,
+            'pression_tete': j.pression_tete,
+            'debit_huile': j.debit_huile,  # Champ clé pour le graphique
+            'gor': j.gor,
+            'glr': j.glr,
+            'taux_eau': j.taux_eau,
+            'eau_inj': j.eau_inj,
+            'puit_id': j.puit_id
+        } for j in jaugeages]
+        
+        return jsonify(jaugeage_data)
+    
+    except Exception as e:
+        return jsonify({'error': str(e), 'status': 'failed'}), 500
 
 @routes.route('/api/update_puit_status/<int:puit_id>', methods=['POST'])
 @login_required
@@ -54,11 +94,11 @@ def update_puit_status(puit_id):
     db.session.commit()
     
     # Envoyer un email d'alerte si le statut est 'urgence'
-    if new_status == 'urgence':
+    if new_status == 'en urgence':
         msg = Message(
             subject=f"URGENCE: Changement de statut du puits {puit.nom}",
-            recipients=['regaiaalaa@gmail.com'],  # Liste des destinataires
-            body=f"Le puits {puit.nom} (ID: {puit.id}) a été marqué comme 'urgence'.\n\n"
+            recipients=['regaiaalaa@gmail.com','clusterlicence@gmail.com'],  # Liste des destinataires
+            body=f"Le puits {puit.nom} (ID: {puit.id}) a été marqué comme 'en urgence'.\n\n"
                  f"Région: {puit.region.nom if puit.region else 'Non spécifiée'}\n"
                  f"Coordonnées: {puit.latitude}, {puit.longitude}\n\n"
                  f"Veuillez prendre les mesures nécessaires."
@@ -643,31 +683,6 @@ def enregistrer_donnees():
         return jsonify({'message': f'Erreur : {str(e)}'}), 500
     
 
-@routes.route('/get_telegougage_data')
-def get_telegougage_data():
-    try:
-        data = Telejaugeage.query.all()
-        result = []
-        for item in data:
-            result.append({
-                'id': item.id,
-                'nom_puits': item.nom_puits,
-                'date_debut': item.date_debut.isoformat() if item.date_debut else None,
-                'date_fin': item.date_fin.isoformat() if item.date_fin else None,
-                'pression_pip': item.pression_pip,
-                'pression_manifold': item.pression_manifold,
-                'temperature_pipe': item.temperature_pipe,
-                'temperature_tete': item.temperature_tete,
-                'pression_tete': item.pression_tete,
-                'debit_huile': item.debit_huile,
-                'gor': item.gor,
-                'glr': item.glr,
-                'taux_eau': item.taux_eau,
-                'eau_inj':item.eau_inj
-            })
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
 @routes.route('/api/puits')
 def search_puits():
     search_term = request.args.get('q', '').strip()

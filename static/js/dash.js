@@ -554,15 +554,28 @@ function initProductionChart(ctx) {
         type: 'line',
         data: {
             labels: [],
-            datasets: [{
-                label: 'PRODUCTION (m³/j)',
-                data: [],
-                borderColor: '#4CAF50',
-                backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                borderWidth: 2,
-                tension: 0.3,
-                fill: true
-            }]
+            datasets: [
+                {
+                    label: 'PRODUCTION JOURNALIÈRE (m³/j)',
+                    data: [],
+                    borderColor: '#4CAF50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'DÉBIT HUILE (m³/h) -jaugeage-',
+                    data: [],
+                    borderColor: '#FF9800',
+                    backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    yAxisID: 'y1'
+                }
+            ]
         },
         options: {
             responsive: true,
@@ -591,9 +604,7 @@ function initProductionChart(ctx) {
                                 second: '2-digit'
                             });
                         },
-                        label: function (context) {
-                            return `Production : ${context.formattedValue} m³/j`;
-                        }
+                        
                     }
                 }
             },
@@ -615,12 +626,28 @@ function initProductionChart(ctx) {
                     grid: { color: 'rgba(0, 0, 0, 0.05)' }
                 },
                 y: {
+                    position: 'left',
                     grid: { color: 'rgba(0, 0, 0, 0.05)' },
                     ticks: { color: '#6B7280' },
-                    title: { display: true, text: 'Production (m³/jour)', color: '#2A2A3D' }
+                    title: { 
+                        display: true, 
+                        text: 'Production (m³/jour)', 
+                        color: '#4CAF50' 
+                    }
+                },
+                y1: {
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    ticks: { color: '#FF9800' },
+                    title: { 
+                        display: true, 
+                        text: 'Débit Huile (m³/h)', 
+                        color: '#FF9800' 
+                    }
                 }
             }
-        }});
+        }
+    });
 }
 
 // Mise à jour du graphique principal
@@ -774,30 +801,48 @@ async function updateProductionChart(data) {
     await updateLock.acquire();
     try {
         if (!productionChart) return;
-        const minuteGroups = {};
+        
+        // Tri des données par timestamp
         const sortedData = [...data].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-        for (const item of sortedData) {
-            const date = new Date(item.timestamp);
-            const minuteKey = `${date.getHours()}:${date.getMinutes()}`;
-            minuteGroups[minuteKey] = item;
-        }
-        const filteredData = Object.values(minuteGroups);
-        if (filteredData.length === 0) return;
-        const last = filteredData[filteredData.length - 1];
+        
+        if (sortedData.length === 0) return;
+        
+        // Récupération des données les plus récentes
+        const lastData = sortedData[sortedData.length - 1];
+        const now = new Date(lastData.timestamp || new Date());
+        
+        // Calcul de la production journalière
         const productionValue = calculateDailyProduction(
-            last.glr || 0,
-            last.pression_pip || 0,
-            last.pression_tete || 0,
-            last.diametre_duse || 0
+            lastData.glr || 0,
+            lastData.pression_pip || 0,
+            lastData.pression_tete || 0,
+            lastData.diametre_duse || 0
         );
-        const now = new Date(last.timestamp || new Date());
-        const lastTimestamp = productionHistory.length > 0 ? productionHistory[productionHistory.length-1].timestamp.getTime() : null;
+        
+        // Vérification si les données sont nouvelles
+        const lastTimestamp = productionHistory.length > 0 ? 
+            productionHistory[productionHistory.length-1].timestamp.getTime() : null;
         const currentTimestamp = now.getTime();
+        
         if (!lastTimestamp || currentTimestamp !== lastTimestamp) {
-            productionHistory.push({ timestamp: now, value: productionValue });
-            if (productionHistory.length > MAX_HISTORY_PROD) productionHistory.shift();
+            // Ajout des nouvelles données à l'historique
+            productionHistory.push({ 
+                timestamp: now, 
+                value: productionValue,
+                debit_huile: lastData.debit_huile || 0
+            });
+            
+            // Limite de l'historique
+            if (productionHistory.length > MAX_HISTORY_PROD) {
+                productionHistory.shift();
+            }
+            
+            // Mise à jour des labels et données
             productionChart.data.labels = productionHistory.map(d => d.timestamp);
             productionChart.data.datasets[0].data = productionHistory.map(d => d.value);
+            productionChart.data.datasets[1].data = productionHistory.map(d => d.debit_huile);
+            
+            // Mise à jour du graphique
             productionChart.update();
         }
     } catch (error) {
@@ -831,21 +876,57 @@ async function updateDashboard() {
     }
 }
 
+
 // Mise à jour des données de production
 async function updateProduction() {
     if (updateLock.isLocked) return;
     try {
-        let url = "/api/modbus_data";
+        // Récupérer les données de télégaugeage
+        let telejaugeageUrl = "/get_telegougage_data";
         if (currentPuitThresholds && currentPuitThresholds.id) {
-            url += `?puit_id=${currentPuitThresholds.id}`;
+            telejaugeageUrl += `?puit_id=${currentPuitThresholds.id}`;
         }
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
-        if (data.length > 0) {
-            await updateProductionChart(data);
+        const telejaugeageRes = await fetch(telejaugeageUrl);
+        if (!telejaugeageRes.ok) throw new Error(`HTTP error! status: ${telejaugeageRes.status}`);
+        const telejaugeageData = await telejaugeageRes.json();
+
+        // Récupérer les données modbus
+        let modbusUrl = "/api/modbus_data";
+        if (currentPuitThresholds && currentPuitThresholds.id) {
+            modbusUrl += `?puit_id=${currentPuitThresholds.id}`;
         }
-    } catch (error) {}
+        const modbusRes = await fetch(modbusUrl);
+        if (!modbusRes.ok) throw new Error(`HTTP error! status: ${modbusRes.status}`);
+        const modbusData = await modbusRes.json();
+
+        // Fusionner les données - prendre tout de Modbus sauf debit_huile de jaugeage
+        let combinedData = [...modbusData];
+        
+        if (telejaugeageData && telejaugeageData.length > 0) {
+            // Trouver le jaugeage le plus récent
+            const latestJaugeage = telejaugeageData.reduce((latest, current) => {
+                const currentDate = new Date(current.date_debut);
+                const latestDate = latest ? new Date(latest.date_debut) : 0;
+                return currentDate > latestDate ? current : latest;
+            }, null);
+
+            if (latestJaugeage) {
+                // Mettre à jour le debit_huile dans toutes les entrées Modbus
+                combinedData = combinedData.map(modbusItem => ({
+                    ...modbusItem,
+                    debit_huile: latestJaugeage.debit_huile
+                }));
+            }
+        }
+
+        console.log("Données combinées:", combinedData);
+
+        if (combinedData.length > 0) {
+            await updateProductionChart(combinedData);
+        }
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour des données de production:", error);
+    }
 }
 
 // Récupération des données des puits
