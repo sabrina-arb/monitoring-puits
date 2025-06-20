@@ -1,0 +1,40 @@
+{% extends 'user/base_user.html' %}
+
+{% block title %}Carte des Puits - Sonatrach{% endblock %}
+
+{% block content %}
+<div id="map-container">
+    <div class="search-form">
+        <form action="{{ url_for('routes.carte') }}" method="POST">
+            <input type="text" id="searchInput" name="search" placeholder="Entrez le nom du puits..." value="{{ search_query }}">
+            <button type="submit">Rechercher</button>
+        </form>
+    </div>
+    <div id="map">{{ map_html | safe }}</div>
+    
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var map = L.map('map').setView([28.0339, 1.6596], 4);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(map);
+
+        var markers = L.markerClusterGroup();
+        // Add markers dynamically here
+        {{ map_html | safe }}
+        map.addLayer(markers);
+
+        // Resize fix
+        window.addEventListener('resize', function () {
+            setTimeout(function () {
+                map.invalidateSize();
+            }, 200);
+        });
+    });
+</script>
+{% endblock %}

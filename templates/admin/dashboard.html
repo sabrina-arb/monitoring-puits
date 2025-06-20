@@ -1,0 +1,287 @@
+{% extends "admin/master.html" %}
+
+{% block title %}Admin Dashboard - Sonatrach{% endblock %}
+
+{% block content %}
+<style>
+    html, body {
+        overflow: hidden !important;
+        height: 100%;
+        overflow-y: auto !important;
+    }
+</style>
+
+<div class="content-admin"> 
+<div class="admin-dashboard">
+    <div class="dashboard-header">
+        <div class="dashboard-title">
+            <i class="fas fa-tachometer-alt"></i>
+            <h1>Tableau de Bord Administrateur</h1>
+        </div>
+        <div class="dashboard-actions">
+            <div class="user-profile">
+                <img src="{{ url_for('static', filename='uploads/' + current_user.image_url) if current_user.image_url else url_for('static', filename='images/default-avatar.jpg') }}" 
+                     alt="Photo de profil" class="user-avatar">
+                <span>{{ current_user.prenom }} {{ current_user.nom }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-overview">
+        <div class="stat-card users">
+            <div class="stat-header">
+                <h3 class="stat-title">Utilisateurs</h3>
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ user_count }}</div>
+    
+            <a href="{{ url_for('test.index_view') }}" class="stat-link">
+                Voir tous <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="stat-card sales">
+            <div class="stat-header">
+                <h3 class="stat-title">Puits</h3>
+                <div class="stat-icon">
+                    <i class="fas fa-oil-well"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ well_count }}</div>
+            <div class="stat-details">
+                <span>Actifs: {{ active_wells }}</span>
+                <span>Maintenance: {{ maintenance_wells }}</span>
+            </div>
+            <a href="{{ url_for('puit.index_view') }}" class="stat-link">
+                Gérer <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="stat-card orders">
+            <div class="stat-header">
+                <h3 class="stat-title">Régions</h3>
+                <div class="stat-icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ region_count }}</div>
+        
+            <a href="{{ url_for('region.index_view') }}" class="stat-link">
+               Gérer <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        <div class="stat-card duse">
+            <div class="stat-header">
+            <h3 class="stat-title">Düses</h3>
+            <div class="stat-icon">
+                <i class="mdi mdi-pipe-valve"></i>
+            </div>
+            </div>
+            <div class="stat-value">{{ duse_count }}</div>
+            <a href="{{ url_for('duse.index_view') }}" class="stat-link">
+            Voir tout <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="stat-card separateur">
+            <div class="stat-header">
+            <h3 class="stat-title">Séparateurs</h3>
+            <div class="stat-icon">
+                <i class="mdi mdi-storage-tank"></i>
+            </div>
+            </div>
+            <div class="stat-value">{{ separateur_count }}</div>
+            <a href="{{ url_for('separateur.index_view') }}" class="stat-link">
+            Voir tout <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="main-content">
+            <div class="chart-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-pie"></i> Statistiques des Puits</h2>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-legend">
+                        <div><span class="legend-color active"></span> Actifs: {{ active_wells }} ({{ ((active_wells / well_count) * 100)|round(1) if well_count > 0 else 0 }}%)</div>
+                        <div><span class="legend-color inactive"></span> Inactifs: {{ inactive_wells }} ({{ ((inactive_wells / well_count) * 100)|round(1) if well_count > 0 else 0 }}%)</div>
+                        <div><span class="legend-color maintenance"></span> Maintenance: {{ maintenance_wells }} ({{ ((maintenance_wells / well_count) * 100)|round(1) if well_count > 0 else 0 }}%)</div>
+                        <div><span class="legend-color urgent"></span> En urgence: {{ urgent_wells }} ({{ ((urgent_wells / well_count) * 100)|round(1) if well_count > 0 else 0 }}%)</div>
+                    </div>
+                   <canvas id="wellStatusChart"></canvas>
+                </div>
+            </div>
+
+            <div class="orders-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> Dernières Activités</h2>
+                    <a href="#" class="view-all">Voir tout</a>
+                </div>
+                <div class="activity-list">
+                    {% if last_activities %}
+                        {% for activity in last_activities %}
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-{{ activity.icon }}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">{{ activity.title }}</div>
+                                <div class="activity-description">{{ activity.details }}</div>
+                                <div class="activity-time">Récemment</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info">Aucune activité récente</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="side-content">
+            <div class="quick-stats">
+                <div class="section-header">
+                    <h2><i class="fas fa-info-circle"></i> Aperçu Rapide</h2>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-label">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Administrateurs</span>
+                    </div>
+                    <div class="stat-number">{{ admin_count }}</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-label">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Ingénieurs</span>
+                    </div>
+                    <div class="stat-number">{{ engineer_count }}</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-label">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Directeurs</span>
+                    </div>
+                    <div class="stat-number">{{ director_count }}</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="stat-label">
+                        <i class="fas fa-hard-hat"></i>
+                        <span>Opérateurs</span>
+                    </div>
+                    <div class="stat-number">{{ operator_count }}</div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <div class="section-header">
+                    <h2><i class="fas fa-bolt"></i> Actions Rapides</h2>
+                </div>
+                <div class="action-buttons">
+                    <a href="{{ url_for('test.create_view') }}" class="action-btn">
+                        <i class="fas fa-user-plus"></i> Nouvel Utilisateur
+                    </a>
+                    <a href="{{ url_for('puit.create_view') }}" class="action-btn">
+                        <i class="fas fa-plus-circle"></i> Ajouter Puit
+                    </a>
+                    <a href="{{ url_for('region.create_view') }}" class="action-btn">
+                        <i class="fas fa-map-marked-alt"></i> Nouvelle Région
+                    </a>
+                    <a href="{{ url_for('duse.create_view') }}" class="action-btn">
+                        <i class="mdi mdi-pipe-valve"></i> Ajouter Düse
+                    </a>
+                    <a href="{{ url_for('separateur.create_view') }}" class="action-btn">
+                        <i class="mdi mdi-storage-tank"></i> Nouveau Séparateur
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let wellStatusChart;
+    const WELL_STATS_REFRESH_INTERVAL = 30000; // 30 secondes
+    
+    // Fonction pour rafraîchir les stats des puits
+    async function refreshWellStats() {
+        try {
+            const response = await fetch('/admin/refresh_well_stats');
+            if (!response.ok) throw new Error('Failed to refresh well stats');
+            const data = await response.json();
+            
+            if (data.success) {
+                updateWellStatusChart(data);
+            }
+        } catch (error) {
+            console.error("Erreur lors du rafraîchissement des stats:", error);
+        }
+    }
+    
+    // Fonction pour mettre à jour le graphique
+    function updateWellStatusChart(data) {
+        if (!wellStatusChart) return;
+        
+        // Mettre à jour les données du graphique
+        wellStatusChart.data.datasets[0].data = [
+            data.data.active_wells,
+            data.data.inactive_wells,
+            data.data.maintenance_wells,
+            data.data.urgent_wells
+        ];
+        
+        wellStatusChart.update();
+        
+        // Mettre à jour les légendes
+        document.querySelector('.legend-color.active').nextSibling.textContent = 
+            `Actifs: ${data.data.active_wells} (${data.percentages.active.toFixed(1)}%)`;
+        document.querySelector('.legend-color.inactive').nextSibling.textContent = 
+            `Inactifs: ${data.data.inactive_wells} (${data.percentages.inactive.toFixed(1)}%)`;
+        document.querySelector('.legend-color.maintenance').nextSibling.textContent = 
+            `Maintenance: ${data.data.maintenance_wells} (${data.percentages.maintenance.toFixed(1)}%)`;
+        document.querySelector('.legend-color.urgent').nextSibling.textContent = 
+            `En urgence: ${data.data.urgent_wells} (${data.percentages.urgent.toFixed(1)}%)`;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('wellStatusChart').getContext('2d');
+        wellStatusChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [
+                        {{ active_wells }},
+                        {{ inactive_wells }},
+                        {{ maintenance_wells }},
+                        {{ urgent_wells }}
+                    ],
+                    backgroundColor: [
+                        '#4CAF50',
+                        '#9E9E9E',
+                        '#FF9800',
+                        '#F44336'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+        
+        // Démarrer le rafraîchissement périodique
+        setInterval(refreshWellStats, WELL_STATS_REFRESH_INTERVAL);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport de Production Sonatrach - Surveillance de Puits</title>
+    <style>
+.observations {
+    page-break-inside: avoid;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    max-width: 100%;
+}
+
+.observations p {
+    word-break: break-all;
+}
+
+
+        /* Reset et base */
+    .body {
+            font-family: 'Arial', sans-serif;
+            margin: 2cm;
+            color: #333;
+            line-height: 1.6;
+            font-size: 11pt;
+            counter-reset: page 0; /* démarrage compteur page */
+        }
+        
+        /* En-tête Sonatrach */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5cm;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.5cm;
+        }
+        
+        .logo {
+    max-width: 400px; /* Ajuster selon besoin */
+    height: auto;
+    margin: 0 auto;
+    display: block;
+}
+        
+        /* Page de garde */
+        .page-garde {
+            text-align: center;
+            margin-top: 5cm;
+            margin-bottom: 5cm;
+        }
+        
+        .document-title {
+            color: #FF8500; /* Couleur Sonatrach */
+            font-size: 24pt;
+            font-weight: bold;
+            margin: 1cm 0;
+        }
+        
+        .document-ref {
+            font-size: 10pt;
+            color: #666;
+        }
+        
+        /* Sections du rapport */
+        .section-title {
+            color: #FF8500;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 5px;
+            margin: 25px 0 15px 0;
+            font-size: 14pt;
+            page-break-after: avoid;
+        }
+        
+        .data-row {
+            display: flex;
+            margin-bottom: 8px;
+            page-break-inside: avoid;
+        }
+        
+        .data-label {
+            flex: 0 0 30%;
+            font-weight: bold;
+            color: #000000;
+        }
+        
+        .data-value {
+            flex: 1;
+        }
+        
+        /* Tableaux pour données techniques */
+        .technical-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+        
+        .technical-table th {
+            background-color: #000000;
+            color: white;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .technical-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .technical-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        /* Section conclusion */
+        .conclusion {
+            margin-top: 1cm;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-left: 4px solid #969696;
+        }
+
+        
+        
+        /* Pied de page */
+        .footer {
+            margin-top: 1.5cm;
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 0.5cm;
+        }
+        
+        /* Saut de page */
+        .page-break {
+            page-break-after: always;
+        }
+
+        /* Pagination */
+        @page {
+            size: A4;
+            margin: 2cm;
+            @bottom-right {
+                content: "Page " counter(page) " sur " counter(pages);
+                font-size: 9pt;
+                color: #666;
+            }
+        }
+        @page:first {
+            @bottom-right {
+                content: none;
+            }
+        }
+        
+        /* Réinitialisation du compteur après la page de garde */
+        .page-break + * {
+            counter-reset: page 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page de garde -->
+    <div class="page-garde"><img src="data:image/png;base64,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" 
+        class="logo">       
+        <h1 class="document-title">RAPPORT TECHNIQUE DE SURVEILLANCE DE PUITS</h1>
+        
+        <div style="font-size:14pt; margin:2cm 0;">
+            <strong>Puits:</strong> {{ data.nom_puits }}<br>
+            <strong>Référence:</strong> {{ data.id_puits }}<br>
+            <strong>Date du rapport:</strong> {{ data.date_rapport }}
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Section 1: Identification du puits -->
+    <h3 class="section-title">1. IDENTIFICATION DU PUITS</h3>
+    <div class="data-row">
+        <div class="data-label">Code puits:</div>
+        <div class="data-value">{{ data.id_puits }}</div>
+    </div>
+    <div class="data-row">
+        <div class="data-label">Nom du puits:</div>
+        <div class="data-value">{{ data.nom_puits }}</div>
+    </div>
+    <div class="data-row">
+        <div class="data-label">Localisation:</div>
+        <div class="data-value">
+            Région: {{ data.region }}<br>
+            Coord. GPS: {{ data.latitude }}°N, {{ data.longitude }}°E
+        </div>
+    </div>
+    <div class="data-row">
+        <div class="data-label">Date mise en service:</div>
+        <div class="data-value">{{ data.date_mise_en_service }}</div>
+    </div>
+
+    <!-- Section 2: Paramètres techniques -->
+    <h3 class="section-title">2. PARAMÈTRES TECHNIQUES</h3>
+    <table class="technical-table">
+        <thead>
+            <tr>
+                <th>Paramètre</th>
+                <th>Valeur</th>
+                <th>Unité</th>
+                <th>Seuil normal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Pression de fond</td>
+                <td>{{ data.pression }}</td>
+                <td>bar</td>
+                <td>50-150</td>
+            </tr>
+            <tr>
+                <td>Température</td>
+                <td>{{ data.temperature }}</td>
+                <td>°C</td>
+                <td>60-120</td>
+            </tr>
+            <tr>
+                <td>Débit journalier</td>
+                <td>{{ data.debit }}</td>
+                <td>m³/h</td>
+                <td>Selon contrat</td>
+            </tr>
+        </tbody>
+    </table>
+
+   <!-- Section 3: État opérationnel -->
+<h3 class="section-title">3. ÉTAT OPÉRATIONNEL</h3>
+<div class="data-row">
+    <div class="data-label">Statut du puits:</div>
+    <div class="data-value">
+        {% if data.etat_puits == 'actif' %}
+            <span style="color: green;">●</span> Actif - Production normale
+        {% elif data.etat_puits == 'inactif' %}
+            <span style="color: rgb(87, 86, 85);">●</span> Inactif - En attente
+        {% elif data.etat_puits == 'maintenance' %}
+            <span style="color: rgb(199, 93, 7);">●</span> Maintenance
+        {% else %}
+            <span style="color: red;">●</span> Urgence
+        {% endif %}
+    </div>
+</div>
+
+    <div class="data-row">
+        <div class="data-label">Alertes techniques:</div>
+        <div class="data-value">{{ data.alertes }} </div>
+    </div>
+    <div class="data-row">
+        <div class="data-label">Opérateur responsable:</div>
+        <div class="data-value">{{ data.operateur }}</div>
+    </div>
+<!-- Section 4: Observations -->
+<h3 class="section-title">4. OBSERVATIONS TECHNIQUES</h3>
+<div style="background-color: #f8f8f8; padding: 15px; border-radius: 4px; text-align: justify; text-indent: 1.5em; white-space: normal; line-height: 1.8;">
+    <p>{{ data.description or "Aucune observation particulière à signaler." }}</p>
+</div>
+
+    <!-- Signature -->
+    <div style="margin-top: 2cm; display: flex; justify-content: space-between;">
+        <div style="width: 40%; border-top: 1px solid #333; padding-top: 5px;">
+            Responsable exploitation<br>
+            <small>Nom et signature</small>
+        </div>
+        <div style="width: 40%; border-top: 1px solid #333; padding-top: 5px;">
+            Chef de district<br>
+            <small>Nom et signature</small>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <div class="footer">
+       <br>Direction Générale<br>
+       Djenane El Malik, Hydra, Alger, Algérie<br>
+       Tél : +213 23 48 30 30<br>
+       www.sonatrach.dz
+    </div>
+</body>
+</html>

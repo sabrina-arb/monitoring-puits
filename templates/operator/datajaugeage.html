@@ -1,0 +1,233 @@
+{% extends 'user/base_user.html' %}
+
+{% block title %}telegougageData- Sonatrach{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système de Télégougage</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/telegougage.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="{{ url_for('static', filename='js/telegougage.js') }}" defer></script>    
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">Jaugeage</a>
+        
+        <div class="navbar-search">
+            <input type="text" id="searchInput" placeholder="Rechercher par nom de puits ou date...">
+            <button id="searchButton">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="navbar-buttons">
+            <button id="exportAllButton" class="navbar-button export-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                Exporter Excel
+            </button>
+            <button id="openFormButton" class="navbar-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Saisir
+            </button>
+            
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="telegougage-list">
+            <div class="telegougage-header">
+                <div>Nom du Puits</div>
+                <div>Date de Début</div>
+                <div>Date de Fin</div>
+                <div>Actions</div>
+            </div>
+            <div id="telegougageItems">
+                <!-- Les éléments seront ajoutés dynamiquement ici -->
+                <div class="empty-state" id="emptyState">
+                    <h3>Aucun Jaugeage enregistré</h3>
+                    <p>Cliquez sur "Saisir" pour ajouter votre premier Jaugeage</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour le formulaire de saisie -->
+    <div id="formModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Nouveau Jaugeage</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <form id="telegougageForm">
+                        <div class="form-row">
+     <div class="form-group position-relative">
+  <label for="nomPuits">Nom du Puits</label>
+  <input type="hidden" id="puit_id" name="puit_id">
+  <input type="text" id="nomPuits" name="nom_puits" class="form-control" autocomplete="off" required>
+  <div id="suggestions" class="suggestions-list"></div>
+</div>
+
+
+                    <div class="form-group">
+                        <label for="dateDebut">Date de Début</label>
+                        <input type="datetime-local" id="dateDebut" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateFin">Date de Fin</label>
+                        <input type="datetime-local" id="dateFin" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pressionPip">Pression PIP</label>
+                        <input type="number" step="0.01" id="pressionPip" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pressionManifold">Pression Manifold</label>
+                        <input type="number" step="0.01" id="pressionManifold" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="temperaturePipe">Température Pipe</label>
+                        <input type="number" step="0.01" id="temperaturePipe" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="temperatureTete">Température Tête</label>
+                        <input type="number" step="0.01" id="temperatureTete" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pressionTete">Pression Tête</label>
+                        <input type="number" step="0.01" id="pressionTete" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="debitHuil">Débit Huile</label>
+                        <input type="number" step="0.01" id="debitHuil" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gor">GOR</label>
+                        <input type="number" step="0.01" id="gor" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="glr">GLR</label>
+                        <input type="number" step="0.01" id="glr" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="old">OLD</label>
+                        <input type="number" step="0.01" id="old" required>
+                    </div>
+                </div>
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="eau">EAU</label>
+                    <input type="number" step="0.01" id="eau" required>
+                </div>
+                <div class="form-group">
+                    <label for="eauinj">Eau_inj</label>
+                    <input type="number" step="0.01" id="eauinj" required>
+                </div>
+            </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelButton">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal pour afficher les détails -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Donnes de Jaugeage</h2>
+                <button class="close-button">&times;</button>
+            </div>
+            <div id="detailContent">
+                <!-- Les détails seront affichés ici dynamiquement -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeDetailButton">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Fermer
+                </button>
+                <button type="button" class="btn btn-success" id="exportButton">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Exporter
+                </button>
+                <button type="button" class="btn btn-danger" id="deleteButton">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+</html>
+{% endblock %}
+
+<style>
+.suggestions-list {
+  position: absolute;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-height: 150px;
+  overflow-y: auto;
+  display: none;
+}
+
+.suggestions-list div {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestions-list div:hover {
+  background-color: #f0f0f0;
+}
+
+</style>

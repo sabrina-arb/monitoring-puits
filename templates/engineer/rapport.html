@@ -1,0 +1,544 @@
+{% extends 'user/base_user.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport de Puits</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+       /* =========================
+   NAVIGATION STYLES
+   ========================= */
+   
+.nav-rapport {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #dddbdb;
+    padding: var(--spacing-md, 12px);
+    margin: 18px auto 10px;
+    border-radius: var(--nav-radius, 8px);
+    max-width: var(--nav-max-width, 900px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+} 
+.nav-button:hover {
+    background-color: #FF8500; 
+    color: black;
+    transform: scale(1.05);
+}
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+margin-left: 20px;
+}
+
+.nav-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #2b2a2a;
+    color: white;
+}.nav-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+.nav-search input[type="text"] {
+    padding: 6px 10px;
+    border: 1.5px solid #ccc;
+    border-radius: 4px;
+    font-size: 20px;
+    outline: none;
+    width: 250px;
+    transition: border-color 0.3s ease;
+}
+
+.nav-search input[type="text"]:focus {
+    border-color: #FF8500; 
+}
+
+.search-btn {
+    background-color: #FF8500; 
+    border: none;
+    border-radius: 4px;
+    padding: 10px 10px;
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.search-btn:hover {
+       background-color: #cc6c00; /* Orange foncé au hover */
+}
+.nav-button.active {
+    background: #FF8500;
+}
+
+.nav-button:hover {
+    opacity: 0.9;
+}
+
+/* =========================
+   TABLE STYLES
+   ========================= */
+
+.rapports-table {
+    width: 70%;
+    margin: 20px auto 0; /* Centré horizontalement */
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden; /* pour que le border-radius soit visible sur les lignes internes */
+    box-shadow: 0 2px 10px rgba(160, 159, 158, 0.829);
+}
+
+.rapports-table th,
+.rapports-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #bebdbd;
+    background-color: white;
+}
+
+/* En-tête */
+.rapports-table th {
+    background-color: #020202ea;
+    color: white;
+}
+
+/* Effet hover sur les lignes */
+.rapports-table tr:hover td {
+    background-color: #ece8e8;
+    transition: background-color 0.3s ease;
+}
+
+
+/* =========================
+   BUTTONS 
+   ========================= */
+.open-btn {
+    padding: 6px 12px;
+    background-color: #FF8500;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.open-btn:hover {
+    background-color: #be5d01;
+}
+
+/* =========================
+   MODAL STYLES
+   ========================= */
+#viewRapportModal {
+    border: 2px solid #FF8500;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.close-rapport {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-rapport:hover {
+    color: #d9534f;
+}
+
+/* =========================
+   RAPPORT DETAILS
+   ========================= */
+.rapport-title {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #1a5276;
+    color: #1a5276;
+}
+
+.rapport-details h3 {
+    margin-top: 20px;
+    color: #1a5276;
+    font-size: 16px;
+}.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 6px 10px;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    font-size: 0.900rem; /* taille de police réduite */
+    display: inline-block; /* pour que la largeur s'adapte au contenu */
+    margin: 10px auto;
+    text-align: center;
+}
+
+.flash-message {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-weight: 600;
+        cursor: pointer;
+
+}
+
+.flash-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+            cursor: pointer;
+
+}
+.flash-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+
+            cursor: pointer;
+
+}
+
+
+.rapport-details p {
+    margin: 5px 0;
+}
+
+.rapport-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+} 
+/* Style général du select : réduire la hauteur et la largeur */
+select {
+     margin-top: 5px;
+    padding: 1px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #a19e9e;
+    transition: border-color 0.3s;
+}
+
+/* Hover : bordure orange et ombre légère */
+select:hover {
+    border-color: orange;
+    box-shadow: 0 0 5px orange;
+}
+
+/* Focus pour accessibilité */
+select:focus {
+    outline: none;
+    border-color: orange;
+    box-shadow: 0 0 5px orange;
+}
+.description-static {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 6px;
+    line-height: 1.5;
+}
+
+    </style>
+    
+    <script src="{{ url_for('static', filename='js/js.js') }}"></script>
+</head>
+<body>
+ 
+
+    
+<nav class="nav-rapport">
+  <div class="nav-buttons">
+    <button class="nav-button active" onclick="showSection('formSection')">Créer</button>
+    <button class="nav-button" onclick="showSection('tableSection')">Consulter</button>
+  </div>
+
+  <div class="nav-search" id="navSearch" style="display: none;">
+    <input type="text" id="searchInput" placeholder="Recherche..." onkeyup="filterRapports()" />
+<button class="search-btn" aria-label="Rechercher" onclick="toggleSearch()">🔍</button>  </div>
+</nav>
+
+   
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="flash-message {{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+    <!-- Section Formulaire -->
+    <section id="formSection">
+        <form method="POST" class="rapport-form" id="rapportForm">
+            <label>Nom du rapport
+                <input type="text" name="nom_rapport" placeholder="Ex: Rapport Mensuel Janvier 2025" 
+               
+           required>
+            </label>
+          <label>Nom du puits
+              <input list="puits-list" name="nom_puits" id="nom_puits"  required>
+               <datalist id="puits-list">
+        {% for puit in puits %}
+              <option value="{{ puit.nom }}">
+        {% endfor %}
+               </datalist>
+            </label>
+
+
+            <label>ID du puits
+                <input type="number"
+                        id="id_puits" 
+                       name="id_puits" 
+                       title="Format: 4 à 20 caractères alphanumériques (ex: PUITS001)"
+                       required>
+            </label>
+            
+            <!-- Coordonnées géographiques -->
+            <label>Latitude
+                <input type="number" 
+                      id="latitude" 
+                       name="latitude" 
+                       step="0.000001"
+                       min="-90" 
+                       max="90"
+                       required>
+            </label>
+            
+            <label>Longitude
+                <input type="number" 
+                       name="longitude"
+                       id="longitude" 
+                       step="0.000001"
+                       min="-180" 
+                       max="180"
+                       required>
+            </label>
+            
+            <!-- Région - Texte avec suggestions -->
+            <label>Région
+                <input type="text" 
+                       name="region" 
+                        id="region"
+                       list="regions-list"
+                       required>
+                        </label>
+            
+            <!-- Date - Format localisé -->
+            <label>Date de mise en service
+                <input type="date" 
+                       name="date_mise_en_service" 
+                       max="{{ datetime.now().strftime('%Y-%m-%d') }}"
+                       required>
+            </label>
+            
+            
+                <label>Pression (Kg/cm³)
+                    <input type="number" 
+                           name="pression" 
+                           step="0.1"
+                           min="0" 
+                           max="1000"
+                           required>
+                </label>
+            
+                <label>Température (°C)
+                    <input type="number" 
+                           name="temperature" 
+                           step="0.1"
+                           min="-50" 
+                           max="150"
+                          
+                           required>
+                </label>
+                <label>Débit (m³/h)
+  <input type="number" 
+         name="debit" 
+         step="0.1" 
+         min="0" 
+         max="100"
+         required>
+</label>
+            <!-- Nombre d'alertes - Entier positif -->
+            <label>Nombre d'alertes
+                <input type="number" 
+                       name="alertes" 
+                       min="0" 
+                       max="100"
+                       required>
+            </label>
+         <label>Status du puits
+    <input type="text" 
+           name="etat_puits" 
+           id="etat_puits"
+           readonly
+           required>
+</label>
+
+           
+            <select name="type_rapport" required>
+                <option value="" selected disabled>-- Sélectionnez un Type --</option>
+                <option value="journalier">Journalier</option>
+                <option value="mensuelle">Mensuelle</option>
+                <option value="annuelle">Annuelle</option>
+                <option value="audit">Audit</option>
+    
+            </select>
+            <!-- Opérateur - Texte avec format nom prénom -->
+           <label>Nom de l'opérateur
+    <input type="text" 
+           name="operateur" 
+           pattern="[A-Za-zÀ-ÿ\s\-]{3,50}" 
+           title="Format: Nom et prénom (3-50 caractères)"
+           value="{{ current_user.nom }} {{ current_user.prenom }}" 
+           required readonly>
+</label>
+
+        <div class="textarea-container">
+            <!-- Nouveau champ Description -->
+            <label>Compte rendu
+                <textarea name="description" rows="4" placeholder="Écrivez ici votre compte rendu..." required >{{ request.form.get('description', '') }}</textarea>
+            </label>
+        </div>
+    
+            <button type="submit">Enregistrer le rapport</button>
+        </form>
+    </section>
+
+   <!-- Section Tableau -->
+    <div id="success-message" style="display: none;" class="success-message">
+    Rapport supprimé avec succès.
+</div>
+
+<section id="tableSection" style="display: none;">
+    <table class="rapports-table">
+        <thead>
+            <tr>
+                <th>Nom du rapport</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody  id="rapportsTableBody">
+            {% if rapports %}
+                {% for rapport in rapports %}
+                <tr>
+                    <td class="nom-rapport">{{ rapport.nom_rapport }}</td>
+                    <td class="date-rapport">{{ rapport.date_rapport.strftime('%d/%m/%Y') }}</td>
+                    <td>
+<button class="open-btn" onclick="openRapport('{{ rapport.id }}')">Ouvrir</button>
+    <button class="delete-btn" onclick="deleteRapport('{{ rapport.id }}')">Supprimer</button>
+<a href="{{ url_for('routes.download_pdf', rapport_id=rapport.id) }}" class="download-btn" target="_blank">
+    Télécharger PDF
+</a>
+
+
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="3" class="no-data">Aucun rapport disponible</td>
+                </tr>
+            {% endif %}
+        </tbody>
+        <tr id="noResultRow" style="display: none;">
+  <td colspan="3" class="no-data">Aucun rapport trouvé</td>
+</tr>
+
+    </table>
+</section>
+
+<!-- Overlay + Modale pour consultation -->
+<div id="overlay" style="display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(6px);
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: none;
+
+   "></div>
+
+<div id="rapportModal" style="    display: none;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    z-index: 1001;
+    width: 100%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;">
+    <span class="close-rapport" onclick="closeRapportModal()">&times;</span>
+    <div id="modalContent"></div>
+</div>
+</body>
+
+</html>
+<script>
+  const puitsData = JSON.parse('{{ puits | tojson | safe }}');
+
+document.getElementById('nom_puits').addEventListener('input', function () {
+    const selectedNom = this.value;
+    const puit = puitsData.find(p => p.nom === selectedNom);
+
+    console.log("Puits sélectionné :", selectedNom, puit); // Debug
+
+    if (puit) {
+        document.getElementById('id_puits').value = puit.id;
+        document.getElementById('latitude').value = puit.latitude;
+        document.getElementById('longitude').value = puit.longitude;
+        document.getElementById('region').value = puit.region;
+    // Préremplir l'état du puits s'il existe
+            const etatSelect = document.querySelector('[name="etat_puits"]');
+            if (etatSelect && puit.etat_puits) {
+                etatSelect.value = puit.etat_puits.toLowerCase(); // attention à la casse
+            }
+        } else {
+            document.querySelector('[name="id_puits"]').value = '';
+            document.querySelector('[name="latitude"]').value = '';
+            document.querySelector('[name="longitude"]').value = '';
+            document.querySelector('[name="region"]').value = '';
+            document.querySelector('[name="etat_puits"]').value = '';
+        }
+});
+</script>
+
+{% endblock %}

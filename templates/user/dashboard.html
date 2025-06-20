@@ -1,0 +1,89 @@
+{% extends 'user/base_user.html' %}
+
+{% block title %}Dashboard Premium - Surveillance des Paramètres{% endblock %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dash.css') }}">
+<script src="{{ url_for('static', filename='js/dash.js') }}"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+
+<div class="dashboard-header">
+    <h1 class="dashboard-title">SURVEILLANCE DES PARAMÈTRES DE PRODUCTION</h1>
+    <div class="dashboard-time">
+        <span id="current-time"></span>
+    </div>
+    <div class="puit-selector" style="position: relative;">
+        <label for="puit-search">Rechercher un puits :</label>
+        <input type="text" id="puit-search" placeholder="  Tapez le nom . . ." autocomplete="off">
+        <div id="puit-results" class="dropdown-results"></div>
+        <button id="alert-icon-button" class="alert-icon-button">
+            &#128276;
+            <span id="alert-count-badge" class="alert-count-badge">0</span>
+        </button>
+        
+        <div id="alert-list-container" class="alert-list-container">
+            <h4>Historique des Alertes</h4>
+            <ul id="alert-list-ul"></ul>
+        </div>
+    </div>
+    <div id="inactive-message" class="status-message">
+    Le puits sélectionné est <strong>inactif</strong> actuellement. Aucune donnée n'est disponible.
+    </div>
+   <div id="maintenance-message" class="status-message">
+    Le puits sélectionné est en <strong>maintenance</strong>. Aucune donnée n'est disponible.
+   </div>
+</div>
+
+<div class="dashboard-container">
+    <div class="top-section">
+        <div class="chart-title">SURVEILLANCE MULTI-PARAMÈTRES</div>
+        <div class="chart-wrapper">
+            <canvas id="mainChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="middle-section">
+        <div class="bars-container">
+            <div class="chart-title">HISTORIQUE DES PRESSIONS</div>
+            <div class="chart-wrapper">
+                <canvas id="pressureBars"></canvas>
+            </div>
+        </div>
+        
+        <div class="gauge-container">
+            <div class="chart-title">INDICATEURS CLÉS</div>
+            <div class="chart-wrapper">
+                <canvas id="comboGauge"></canvas>
+            </div>
+        </div>
+        
+        <div class="calendar-container">
+            <div class="chart-title">CALENDRIER DE PRODUCTION</div>
+            <div class="chart-wrapper">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bottom-section">
+        <div class="chart-title">PRODUCTION JOURNALIÈRE </div>
+        <div class="chart-wrapper production-container">
+            <canvas id="productionChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+{% endblock %}

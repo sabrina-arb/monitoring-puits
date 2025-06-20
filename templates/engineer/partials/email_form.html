@@ -1,0 +1,152 @@
+
+
+<div class="email-form-container">
+    <form action="{{ url_for('routes.send_email') }}" method="POST" class="email-form">
+        <!-- Champ de message personnalisé -->
+        <div class="form-group">
+            <label for="message">Message d'accompagnement :</label>
+            <textarea name="message" id="message" rows="3" placeholder="Bonjour,&#10;Veuillez trouver ci-joint le rapport..." 
+                     class="custom-message" required></textarea>
+            <small class="form-hint">Ce message sera inclus dans l'email</small>
+        </div>
+
+        <div class="form-group">
+            <label for="destinataire">Adresse email du destinataire:</label>
+            <input type="email" name="destinataire" placeholder="email@exemple.com" id="destinataire" required>
+            <small class="error-message">Veuillez entrer une adresse email valide</small>
+        </div>
+        
+        <!-- Champs cachés -->
+        <input type="hidden" name="nom_rapport" data-field=" nom_rapport ">
+        <input type="hidden" name="type_rapport" data-field=" type_rapport">
+        <input type="hidden" name="nom_puits" data-field=" nom_puits ">
+        <input type="hidden" name="id_puits" data-field="id_puits ">
+        <input type="hidden" name="latitude" data-field=" latitude ">
+        <input type="hidden" name="longitude" data-field=" longitude ">
+        <input type="hidden" name="region" data-field=" region ">
+        <input type="hidden" name="date_mise_en_service" data-field=" date_mise_en_service ">
+        <input type="hidden" name="pression" data-field=" pression ">
+        <input type="hidden" name="temperature" data-field=" temperature ">
+        <input type="hidden" name="debit" data-field="debit ">
+        <input type="hidden" name="etat_puits" data-field="etat_puits ">
+        <input type="hidden" name="alertes" data-field=" alertes ">
+        <input type="hidden" name="operateur" data-field=" operateur ">
+        <input type="hidden" name="description" data-field=" description ">
+
+        <button type="submit" class="email-submit-btn">
+            <i class="icon-envelope"></i> Envoyer le rapport
+        </button>
+    </form>
+</div>
+
+<style>
+.email-form-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+
+.email-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.email-form input[type="email"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.email-submit-btn {
+    padding: 8px 15px;
+    background-color: #1a5276;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.email-submit-btn:hover {
+    background-color: #154360;
+}
+
+.icon-envelope {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'/%3E%3C/svg%3E");
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    50% { transform: translateX(8px); }
+    75% { transform: translateX(-8px); }
+    100% { transform: translateX(0); }
+}
+
+.email-error {
+    border: 2px solid #dc3545 !important;
+    background-color: #fff3f3 !important;
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 4px;
+    display: none;
+}
+</style>
+
+<script>
+const form = document.querySelector('.email-form');
+const emailInput = document.getElementById('destinataire');
+const errorMessage = emailInput.parentElement.querySelector('.error-message');
+
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    return re.test(email);
+}
+
+function triggerError(input) {
+    input.classList.add('email-error');
+    errorMessage.style.display = 'block';
+    setTimeout(() => input.classList.remove('email-error'), 1000);
+}
+
+form.addEventListener('submit', (e) => {
+    const email = emailInput.value.trim();
+
+    if (!validateEmail(email)) {
+        e.preventDefault();
+        triggerError(emailInput);
+        emailInput.focus();
+    }
+});
+
+emailInput.addEventListener('input', () => {
+    if (validateEmail(emailInput.value.trim())) {
+        emailInput.classList.remove('email-error');
+        errorMessage.style.display = 'none';
+    }
+});
+</script>
+
+

@@ -1,0 +1,490 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #34495e;
+    --accent-color: #3498db;
+    --background-color: #ecf0f1;
+    --card-color: #ffffff;
+    --text-color: #333333;
+    --text-light: #7f8c8d;
+    --border-color: #bdc3c7;
+    --danger-color: #e74c3c;
+    --success-color: #2ecc71;
+    --excel-green: #217346;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.navbar {
+    background-color: var(--primary-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.navbar-brand {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.navbar-search {
+    display: flex;
+    flex-grow: 1;
+    max-width: 400px;
+}
+
+.navbar-search input {
+    flex-grow: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px 0 0 4px;
+    font-size: 0.9rem;
+}
+
+.navbar-search button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.navbar-search button:hover {
+    background-color: #2980b9;
+}
+
+.navbar-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.navbar-button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.navbar-button:hover {
+    background-color: #cc7707;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.telegougage-list {
+    background-color: var(--card-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(189, 92, 1, 0.05);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.telegougage-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 120px;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 1rem;
+    font-weight: bold;
+}
+
+.telegougage-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 120px;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.telegougage-item:last-child {
+    border-bottom: none;
+}
+
+.telegougage-item:hover {
+    background-color: #f8f9fa;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    box-shadow: 0 2px 5px rgba(122, 119, 119, 0.815);
+}
+
+.btn-success {
+    background-color: var(--excel-green);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #1a5c38;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-secondary {
+    background-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.btn-secondary:hover {
+    background-color: #676b6b;
+    color: white;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    overflow: auto;
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    background-color:white;
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(17, 17, 16, 0.884);
+    width: 80%;
+    max-width: 700px;
+    animation: modalopen 0.4s;
+    border: 1px solid var(--border-color);
+}
+
+@keyframes modalopen {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    color: black;
+    font-weight: 600;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: var(--danger-color);
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: black;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: #f8f9fa;
+    transition: border 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: rgb(182, 99, 4);
+    background-color: white;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.detail-item {
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-right: 0.5rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-light);
+}
+
+.empty-state p {
+    margin-top: 1rem;
+}
+
+/* Icônes */
+.icon {
+    width: 16px;
+    height: 16px;
+}
+/**button exporter tout*/
+/* Style pour le bouton d'export */
+.export-button {
+    background-color: #28a745;
+    color: white;
+    border: 1px solid #28a745;
+}
+
+.export-button:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.navbar-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Ajoutez ces règles à la fin du fichier CSS existant */
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+    .container {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .navbar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+    }
+
+    .navbar-search {
+        max-width: 100%;
+        margin: 0.5rem 0;
+    }
+
+    .navbar-buttons {
+        justify-content: flex-end;
+        margin-top: 0.5rem;
+    }
+
+    .telegougage-header,
+    .telegougage-item {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .telegougage-header div:nth-child(3),
+    .telegougage-header div:nth-child(4),
+    .telegougage-item div:nth-child(3),
+    .telegougage-item div:nth-child(4) {
+        grid-column: 2;
+    }
+
+    .action-buttons {
+        grid-column: 1 / -1;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+
+    .modal-content {
+        width: 90%;
+        margin: 10% auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        flex-wrap: wrap;
+    }
+
+    .modal-footer button {
+        flex: 1 1 45%;
+        margin-bottom: 0.5rem;
+    }
+
+    .telegougage-header,
+    .telegougage-item {
+        grid-template-columns: 1fr;
+    }
+
+    .telegougage-header div,
+    .telegougage-item div {
+        grid-column: 1;
+    }
+
+    .action-buttons {
+        justify-content: space-around;
+    }
+    .saisie-button {
+        padding-right: 10px;
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .navbar-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal-content {
+        margin: 15% auto;
+        width: 98%;
+        padding: 1rem;
+    }
+
+    .modal-footer button {
+        flex: 1 1 100%;
+    }
+
+    .btn {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Améliorations pour les petits écrans */
+@media (max-width: 400px) {
+    :root {
+        font-size: 14px;
+    }
+
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+    }
+
+    .form-group input, 
+    .form-group select {
+        padding: 0.5rem;
+    }
+   
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surveillance des Puits de Pétrole - Sonatrach</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Sonatrach">
+            <span>Sonatrach Well Monitoring System</span>
+        </div>
+        
+        <nav>
+            <ul>
+                <li><a href="#accueil" class="active">Accueil</a></li>
+                <li><a href="#a-propos">À Propos</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="{{ url_for('routes.login') }}" class="btn-login">Connexion</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="accueil" class="hero">
+        <div class="hero-content">
+            <h1>Surveillance des Puits de Pétrole</h1>
+            <p>
+                Optimisez la gestion de vos puits de pétrole avec notre système de surveillance avancée. 
+                Détection en temps réel, analyse des données et alertes intelligentes pour une production efficace et sécurisée.
+            </p>
+            <a href="#services" class="btn">Découvrez nos services</a>
+        </div>
+    </section>
+
+    <section id="a-propos" class="about">
+        <div class="container">
+            <h2>À Propos de Nous</h2>
+            <p>
+                <strong>Sonatrach</strong> est un leader mondial dans l'exploration et la production de pétrole et de gaz. 
+                Depuis plus de 50 ans, nous nous engageons à fournir des solutions innovantes pour une gestion durable et sécurisée des ressources énergétiques.
+            </p>
+            <p>
+                Notre système de surveillance des puits de pétrole a été conçu pour répondre aux défis actuels de l'industrie. 
+                Grâce à des technologies de pointe, nous aidons nos clients à maximiser leur production tout en minimisant les risques environnementaux et opérationnels.
+            </p>
+        </div>
+    </section>
+
+    <section id="services" class="features-detail">
+        <div class="container">
+            <h2>Nos Services</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <i class="fas fa-database"></i>
+                    <h3>Collecte et gestion des données</h3>
+                    <p>Acquérez des données en temps réel, automatiquement ou manuellement, pour une surveillance précise et une analyse approfondie des puits.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Visualisation avancée</h3>
+                    <p>Explorez vos données grâce à des graphiques interactifs, des tableaux de bord personnalisables et des rapports détaillés pour une analyse approfondie.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h3>Cartographie et gestion des puits</h3>
+                    <p>Visualisez vos puits sur une carte interactive, ajoutez des annotations et gérez facilement l'ajout de nouveaux puits.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Alertes intelligentes</h3>
+                    <p>Surveillez en temps réel les paramètres critiques et recevez des alertes personnalisées en cas de dépassement de seuils pour une réaction rapide.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-links">
+                <a href="/support">Support</a>
+                <a href="https://sonatrach.com/mentions-legales">Mentions légales</a>
+                <a href="https://sonatrach.com/nous-contacter">Contact</a>
+            </div>
+            <div class="footer-info">
+                <p>Sonatrach - Siège social : Djenane El Malik – Hydra – Alger</p>
+                <p>Tél : 023 48 31 31 | Site : <a href="https://www.sonatrach.com" target="_blank">www.sonatrach.com</a></p>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2025 Sonatrach. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,302 @@
+{% extends 'user/base_user.html' %}
+
+{% block title %}Seuils des Puits - Sonatrach{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+    
+    <!-- Barre de recherche avec bouton Rechercher -->
+    <div class="mb-3">
+        <div class="input-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Entrer le nom du puits...">
+            <button class="btn btn-primary" type="button" id="searchButton">
+                <i class="fas fa-search"></i> Rechercher
+            </button>
+        </div>
+    </div>
+
+    <!-- Message d'erreur si aucun puits trouvé -->
+    <div id="noResultsMessage" class="alert alert-danger" style="display: none;" role="alert">
+        Aucun puits trouvé avec ce nom.
+    </div>
+
+    <div class="table-responsive">
+        <table id="puitsTable" class="table table-bordered table-hover bg-white shadow-sm rounded">
+            <thead class="table-light">
+                <tr>
+                    <th>Nom du Puits</th>
+                    <th>Pression Min</th>
+                    <th>Pression Max</th>
+                    <th>Débit Min</th>
+                    <th>Débit Max</th>
+                    <th>Température Min</th>
+                    <th>Température Max</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in puits %}
+<tr class="puits-row {% if p.id|string == error_id %}ligne-erreur{% endif %}">
+                    <form method="POST" action="{{ url_for('routes.sysalerte') }}" class="seuil-form">
+                        <input type="hidden" name="id" value="{{ p.id }}">
+                        <td class="puits-name">{{ p.nom }}</td>
+                        <td><input type="number" step="0.01" name="p_min" value="{{ p.p_min or '' }}" class="form-control form-control-sm" required></td>
+                        <td><input type="number" step="0.01" name="p_max" value="{{ p.p_max or '' }}" class="form-control form-control-sm" required></td>
+                        <td><input type="number" step="0.01" name="d_min" value="{{ p.d_min or '' }}" class="form-control form-control-sm" required></td>
+                        <td><input type="number" step="0.01" name="d_max" value="{{ p.d_max or '' }}" class="form-control form-control-sm" required></td>
+                        <td><input type="number" step="0.01" name="t_min" value="{{ p.t_min or '' }}" class="form-control form-control-sm" required></td>
+                        <td><input type="number" step="0.01" name="t_max" value="{{ p.t_max or '' }}" class="form-control form-control-sm" required></td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <button type="submit" name="action" value="enregistrer" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-save"></i> Enregistrer
+                                </button>
+                                <button type="submit" name="action" value="modifier" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </button>
+                            </div>
+                            <div class="text-danger mt-2 error-global" style="display: none;"></div>
+
+                        </td>
+                    </form>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f5f3f0;
+    }
+    .container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(160, 159, 158, 0.829);
+    }
+ .ligne-erreur {
+    background-color: #ffdddd !important; /* Rouge clair */
+    border-left: 3px solid #1b1a1a !important;
+}
+
+.ligne-erreur td {
+    background-color: inherit !important;
+}
+
+</style>
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+    const forms = document.querySelectorAll("form.seuil-form");
+
+    forms.forEach(form => {
+const lignePuits = form.closest("tr.puits-row");
+
+        
+        const inputs = {
+            p_min: form.querySelector("input[name='p_min']"),
+            p_max: form.querySelector("input[name='p_max']"),
+            d_min: form.querySelector("input[name='d_min']"),
+            d_max: form.querySelector("input[name='d_max']"),
+            t_min: form.querySelector("input[name='t_min']"),
+            t_max: form.querySelector("input[name='t_max']")
+        };
+
+        const modifierBtn = form.querySelector("button[value='modifier']");
+
+
+
+        if (!modifierBtn || Object.values(inputs).some(i => !i)) return;
+
+        // Sauvegarde des anciennes valeurs à l'ouverture de la page
+        const ancienSeuils = {};
+        for (const key in inputs) {
+            ancienSeuils[key] = parseFloat(inputs[key].value) || 0;
+        }
+
+        // Création d’un message d’erreur par champ
+        const errorMessages = {};
+        for (const key in inputs) {
+            const msg = document.createElement("div");
+            msg.style.color = "red";
+            msg.style.fontSize = "0.8em";
+            msg.style.display = "none";
+            inputs[key].insertAdjacentElement("afterend", msg);
+            errorMessages[key] = msg;
+        }
+function validateInputs() {
+    let isAnyModified = false;
+    let isValid = true;
+
+    for (const key in inputs) {
+        const input = inputs[key];
+        const newValue = parseFloat(input.value);
+        const oldValue = ancienSeuils[key];
+
+        errorMessages[key].style.display = "none";
+        errorMessages[key].textContent = "";
+
+        if (isNaN(newValue)) {
+            isValid = false;
+            errorMessages[key].textContent = "Valeur numérique requise.";
+            errorMessages[key].style.display = "block";
+            continue;
+        }
+
+        if (newValue !== oldValue) {
+            isAnyModified = true;
+
+            if (newValue > oldValue) {
+                isValid = false;
+                errorMessages[key].textContent = "Impossible d'augmenter la valeur.";
+                errorMessages[key].style.display = "block";
+            }
+        }
+    }
+
+    // Appliquer ou supprimer la classe d'erreur sur la ligne
+    const lignePuits = form.closest("tr.puits-row");
+    if (lignePuits) {
+        if (!isValid) {
+            lignePuits.classList.add("ligne-erreur");
+        } else {
+            lignePuits.classList.remove("ligne-erreur");
+        }
+    }
+
+    // Activer ou désactiver le bouton Modifier
+    modifierBtn.disabled = !(isValid && isAnyModified);
+    modifierBtn.title = !isAnyModified 
+        ? "Aucune modification détectée." 
+        : !isValid 
+            ? "Une ou plusieurs valeurs sont invalides." 
+            : "";
+}
+        form.addEventListener("submit", function(event) {
+    const globalError = form.querySelector(".error-global");
+    globalError.style.display = "none";
+    globalError.textContent = "";
+
+    const submitter = event.submitter;
+    if (!submitter || submitter.value !== "modifier") return;
+
+    let isValid = true;
+    let isAnyModified = false;
+
+    for (const key in inputs) {
+        const input = inputs[key];
+        const newValue = parseFloat(input.value);
+        const oldValue = ancienSeuils[key];
+
+        errorMessages[key].style.display = "none";
+        errorMessages[key].textContent = "";
+
+        if (isNaN(newValue)) {
+            isValid = false;
+            errorMessages[key].textContent = "Valeur numérique requise.";
+            errorMessages[key].style.display = "block";
+            continue;
+        }
+
+        if (newValue !== oldValue) {
+            isAnyModified = true;
+            if (newValue > oldValue) {
+                isValid = false;
+                errorMessages[key].textContent = "Impossible d'augmenter la valeur.";
+                errorMessages[key].style.display = "block";
+            }
+        }
+    }
+
+    // Mise à jour de l'affichage des erreurs
+    const lignePuits = form.closest("tr.puits-row");
+    if (lignePuits) {
+        if (!isValid) {
+            lignePuits.classList.add("ligne-erreur");
+        } else {
+            lignePuits.classList.remove("ligne-erreur");
+        }
+    }
+
+    if (!isAnyModified) {
+        isValid = false;
+        globalError.textContent = "Aucune modification détectée.";
+        globalError.style.display = "block";
+    }
+
+    if (!isValid) {
+        event.preventDefault();
+        if (globalError.textContent === "") {
+            globalError.textContent = "Une ou plusieurs valeurs sont invalides.";
+            globalError.style.display = "block";
+        }
+    }
+});
+
+        // Lancer la validation à chaque changement
+        Object.values(inputs).forEach(input => {
+            input.addEventListener("input", validateInputs);
+        });
+
+        validateInputs(); // Validation initiale
+    });
+
+
+
+        // ✅ Filtrage par nom de puits
+        const searchInput = document.getElementById("searchInput");
+        const searchButton = document.getElementById("searchButton");
+        const puitsTable = document.getElementById("puitsTable");
+        const noResultsMessage = document.getElementById("noResultsMessage");
+
+        if (searchInput && searchButton && puitsTable) {
+            const rows = puitsTable.querySelectorAll("tbody tr");
+
+            function filterRows() {
+                const searchValue = searchInput.value.trim().toLowerCase();
+                let found = false;
+
+                rows.forEach(row => {
+                    const nameCell = row.querySelector(".puits-name");
+                    if (nameCell) {
+                        const name = nameCell.textContent.trim().toLowerCase();
+                        if (name.includes(searchValue)) {
+                            row.style.display = "";
+                            found = true;
+                        } else {
+                            row.style.display = "none";
+                        }
+                    }
+                });
+
+                // Si aucun puits n'a été trouvé, afficher le message d'erreur
+                if (!found) {
+                    noResultsMessage.style.display = "block";
+                } else {
+                    noResultsMessage.style.display = "none";
+                }
+            }
+
+            searchInput.addEventListener("input", filterRows);
+            searchButton.addEventListener("click", filterRows);
+
+            // Filtrer initialement si nécessaire
+            filterRows();
+        }
+    });
+</script>
+
+
+{% endblock %}
